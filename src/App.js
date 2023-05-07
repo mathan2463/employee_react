@@ -30,8 +30,8 @@ function App() {
     return (
       <div>
       <Routes>
-       <Route path='/' element={<Loginform/>}></Route>
-       <Route path='/signup' element={<Signupform/>}></Route>
+       <Route exact path='/' element={<Loginform/>}></Route>
+       <Route exact path='/signup' element={<Signupform/>}></Route>
       </Routes>
       </div>
      );
@@ -39,11 +39,11 @@ function App() {
     return (
       <div>
       <Routes>
-       <Route path='/' element={<Loginform/>}></Route>
-       <Route path='/employelist' element={<Employelist/>}></Route>
-       <Route path='/crateemploye' element={<Employecreate/>}></Route>
-       <Route path='/editemploye/:id' element={<Employeedit/>}></Route>
-       <Route path='/signup' element={<Signupform/>}></Route>
+       <Route exact path='/' element={<Loginform/>}></Route>
+       <Route exact path='/employelist' element={<Employelist/>}></Route>
+       <Route exact path='/crateemploye' element={<Employecreate/>}></Route>
+       <Route exact path='/editemploye/:id' element={<Employeedit/>}></Route>
+       <Route exact path='/signup' element={<Signupform/>}></Route>
       </Routes>
       </div>
      );
