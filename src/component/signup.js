@@ -10,6 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import { makeStyles } from "@material-ui/core/styles";
 import swal from "sweetalert";
 import { Link } from 'react-router-dom';
+import apiurl from './apiurl';
 
 const useStyles = makeStyles((theme) => ({
    root: {
@@ -38,40 +39,34 @@ const useStyles = makeStyles((theme) => ({
    },
 }));
 
-async function signup(params) {
-   return fetch("http://localhost:3000/employee/create", {
-      method: "POST",
-      headers: {
-         "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-   }).then((data) => data.json());
-}
-
 export default function Signup() {
    const classes = useStyles();
-   const [name, setname] = useState();
+   const [id, setname] = useState();
    const [email, setemail] = useState();
    const [password, setpassword] = useState();
    const [phone, setphone] = useState();
    const [address, setaddress] = useState();
-   const [type, settype] = useState();
-   settype(1);
+   const [type, settype] = useState(1);
    const handleSubmit = async (e) => {
       settype(1);
       e.preventDefault();
-      const response = await signup({
-         name,email,password,phone,address,type
-      });
-      if (response.status === true) {
-         swal("Success", response.message, "success", {
+      const req = { id, type, email, phone, password, address }
+      console.log(req);
+      const response = await apiurl.post("/employee", req)
+         .catch((e) => {
+            console.log(e);
+            swal("Failed", "Id already exists", "error");
+         })
+      console.log(response);
+      if(response.status === 200 || response.status === 201){
+         swal("Success", "Data saved successfully!", "success", {
             buttons: false,
-            timer: 2000,
+            timer: 1000,
          }).then((value) => {
-            window.location.href = "/";
+            window.location.href = "/employelist";
          });
       } else {
-         swal("Failed", response.message, "error");
+         swal("Failed", "Something went wrong. Please try again later.", "error");
       }
    };
 

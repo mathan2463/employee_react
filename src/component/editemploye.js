@@ -43,7 +43,7 @@ const Employeedit = () => {
 
    //state to save get data by url id
 
-   const [name, setname] = useState("")
+   const [id, setname] = useState("")
 
    const [email, setemail] = useState("")
 
@@ -52,12 +52,10 @@ const Employeedit = () => {
    const [phone, setphone] = useState("")
 
    const [password, setpassword] = useState("")
-
-   const [newpassword, setnewpassword] = useState("")
-
+   
    const [address, setaddress] = useState("")
 
-   const [id, setid] = useState()
+   // const [id, setid] = useState(name);
 
    // function to get data
    //  const Getdata = async()=>{
@@ -74,36 +72,35 @@ const Employeedit = () => {
    //   } 
 
    const Getdata = async () => {
-      const response = await fetch(`http://localhost:3000/employee/view/${empid}`, {
-         method: 'GET',
-         headers: {
-            accept: 'application/json',
-         },
-      });
-      const data = await response.json();
-      setname(data.responseData.name)
-      setemail(data.responseData.email)
-      setphone(data.responseData.phone)
-      setpassword(data.responseData.password)
-      setaddress(data.responseData.address)
-      settype(data.responseData.type)
-      setid(data.responseData.id)
+      const response = await apiurl.get(`/employee/${empid}`)
+      .catch((e)=>{
+         console.log(e)
+      })
+      console.log(response);
+      // const data = await response.json();
+      setname(response.data.id)
+      setemail(response.data.email)
+      setphone(response.data.phone)
+      setpassword(response.data.password)
+      setaddress(response.data.address)
+      settype(response.data.type)
+      // setid(response.data.id)
       // console.log(data)
       // setempdata(data.responseData);
    }
 
 
    // useeffect is used to get data from json server by axios
-   useEffect(() => {
-      Getdata();
-   })
+   useEffect(()=>{
+      Getdata()
+   },[])
 
    //code to update data to server
    // const Uploaddata = async () => {
 
-   //    const req = { id, name, email, phone, type, password, newpassword, address }
+   //    const req = { id, email, phone, type, password, address }
 
-   //    const response = await apiurl.put(`/employee/update`, req)
+   //    const response = await apiurl.put(`/employee/${empid}`, req)
 
    //       .catch((e) => {
    //          console.log(e)
@@ -116,13 +113,18 @@ const Employeedit = () => {
    const Handleupdate = async (e) => {
       e.preventDefault()
       // Uploaddata()
-      const req = { id, name, email, phone, type, password, newpassword, address }
-      const response = await apiurl.put(`/employee/update`, req)
+      var req = {}
+      if(id === "admin"){
+         req = { id, email, phone, type: 1, password, address }
+      }else{
+         req = { id, email, phone, type, password, address }
+      }
+      const response = await apiurl.put(`/employee/${empid}`, req)
          .catch((e) => {
             console.log(e)
          })
-      // console.log(response);
-      if(response.data.status === true){
+      console.log(response);
+      if(response.status === 200 || response.status === 201){
          swal("Success", "Data saved successfully!", "success", {
            buttons: false,
            timer: 1000,
@@ -133,13 +135,14 @@ const Employeedit = () => {
          swal("Failed", response.data.message, "error");
        }
       // alert("updated successfully")
-      // setemail("");
-      // setname("");
-      // setphone("");
-      // settype("");
-      // setpassword("");
-      // setaddress("");
+      setemail("");
+      setname("");
+      setphone("");
+      settype("");
+      setpassword("");
+      setaddress("");
    }
+  
 
 
    return (
@@ -165,7 +168,7 @@ const Employeedit = () => {
                         id="name"
                         name="name"
                         label="Name"
-                        value={name}
+                        value={id}
                         onChange={(e) => setname(e.target.value)}
                      />
                      {/* <label className="">EMAIL</label> */}
@@ -189,8 +192,8 @@ const Employeedit = () => {
                         name="password"
                         label="Password"
                         type="password"
-                        value={newpassword}
-                        onChange={(e) => setnewpassword(e.target.value)}
+                        value={password}
+                        onChange={(e) => setpassword(e.target.value)}
                      />
                      {/* <label className="">PHONE</label> */}
                      <TextField
@@ -226,9 +229,7 @@ const Employeedit = () => {
                         onChange={(e) => { settype(e.target.value) }}
                      >
                         <MenuItem value={1}>Admin</MenuItem>
-                        <MenuItem value={2}>Senior Developer</MenuItem>
-                        <MenuItem value={3}>Manager</MenuItem>
-                        <MenuItem value={4}>Support Team</MenuItem>
+                        <MenuItem value={2}>Manager</MenuItem>
                      </Select>
                      <Button
                         type="submit"

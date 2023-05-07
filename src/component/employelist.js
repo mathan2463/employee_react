@@ -17,15 +17,14 @@ const Employelist = () => {
 
     // function to get data
     const Getdata = async () => {
-        const response = await fetch("http://localhost:3000/employee/getall", {
-            method: 'GET',
-            headers: {
-                accept: 'application/json',
-            },
+        fetch("http://localhost:8000/employee").then(res => {
+            if (!res.ok) {
+                return false
+            }
+            return res.json();
+        }).then(res => {
+            setempdata(res)
         });
-        const data = await response.json();
-        // console.log(data)
-        setempdata(data.responseData);
     }
 
     // useeffect is used to get data from json server by axios
@@ -37,16 +36,13 @@ const Employelist = () => {
 
     //to delete a item
     const Deletefunction = async (id) => {
-
-        await apiurl.delete(`/employee/delete/${id}`)
-
+        await apiurl.delete(`/employee/${id}`)
         Getdata()
     }
 
 
-    console.log(empdata);
+    // console.log(empdata);
     const handleLogout = () => {
-        localStorage.removeItem("accessToken");
         localStorage.removeItem("user");
         window.location.href = "/";
     };
@@ -80,9 +76,6 @@ const Employelist = () => {
                 <table className='mx-auto mb-2 center w-[700px]'>
                     <thead className='border-2 text-2xl bg-black'>
                         <tr className='border-2'>
-                            <td className='border-2 px-2 py-2 bck-Gray'>
-                                ID
-                            </td>
                             <td className='border-2  px-2 py-2 bck-Gray'>
                                 NAME
                             </td>
@@ -109,8 +102,7 @@ const Employelist = () => {
                                 empdata.map(item => (
                                     <tr key={item.id}>
                                         <td className='border-2 px-2 py-2'>{item.id}</td>
-                                        <td className='border-2 px-2 py-2'>{item.name}</td>
-                                        <td className='border-2 px-2 py-2'>{item.typeName}</td>
+                                        <td className='border-2 px-2 py-2'>{item.type === 1 ? 'Admin' : 'Manager'}</td>
                                         <td className='border-2 px-2 py-2'>{item.email}</td>
                                         <td className='border-2 px-2 py-2'>{item.phone}</td>
                                         <td className='border-2 px-2 py-2'>{item.address}</td>

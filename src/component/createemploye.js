@@ -36,7 +36,7 @@ const useStyles = makeStyles((theme) => ({
 const Employecreate = () => {
   const classes = useStyles();
   // state are  used to store user input
-  const [name, setname] = useState("")
+  const [id, setname] = useState("")
 
   const [email, setemail] = useState("")
 
@@ -47,6 +47,7 @@ const Employecreate = () => {
   const [password, setpassword] = useState("")
 
   const [address, setaddress] = useState("")
+
   // function is used to post data to json server by axios
   // const Pushdata = async () => {
 
@@ -66,14 +67,15 @@ const Employecreate = () => {
   const Handlesubmit = async (e) => {
     e.preventDefault()
     // Pushdata();
-    const req = { name, type, email, phone, password, address }
-    const response = await apiurl.post("/employee/create", req)
+    const req = { id, type, email, phone, password, address }
+    console.log(req);
+    const response = await apiurl.post("/employee", req)
       .catch((e) => {
         console.log(e);
         swal("Failed", "Id already exists", "error");
       })
     console.log(response);
-    if(response.data.status === true){
+    if(response.status === 200 || response.status === 201){
       swal("Success", "Data saved successfully!", "success", {
         buttons: false,
         timer: 1000,
@@ -81,7 +83,7 @@ const Employecreate = () => {
         window.location.href = "/employelist";
      });
     }else{
-      swal("Failed", response.data.message, "error");
+      swal("Failed", "Something went wrong. Please try again later.", "error");
     }
     // setemail("");
     // setname("");
@@ -116,7 +118,7 @@ const Employecreate = () => {
                 id="name"
                 name="name"
                 label="Name"
-                value={name}
+                value={id}
                 onChange={(e) => setname(e.target.value)}
               />
               {/* <label className="">EMAIL</label> */}
@@ -178,9 +180,7 @@ const Employecreate = () => {
                 onChange={(e) => { settype(e.target.value) }}
               >
                 <MenuItem value={1}>Admin</MenuItem>
-                <MenuItem value={2}>Senior Developer</MenuItem>
-                <MenuItem value={3}>Manager</MenuItem>
-                <MenuItem value={4}>Support Team</MenuItem>
+                <MenuItem value={2}>Manager</MenuItem>
               </Select>
               <Button
                 type="submit"

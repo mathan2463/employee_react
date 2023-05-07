@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Avatar from "@material-ui/core/Avatar";
 import Button from "@material-ui/core/Button";
 import CssBaseline from "@material-ui/core/CssBaseline";
@@ -37,40 +37,58 @@ const useStyles = makeStyles((theme) => ({
    },
 }));
 
-async function loginUser(credentials) {
-   return fetch("http://localhost:3000/employee/login", {
-      method: "POST",
-      headers: {
-         "Content-Type": "application/json",
-      },
-      body: JSON.stringify(credentials),
-   }).then((data) => data.json());
-}
 
 export default function Signin() {
-   const classes = useStyles();
-   const [email, setUserName] = useState();
-   const [password, setPassword] = useState();
 
-   const handleSubmit = async (e) => {
+   const classes = useStyles();
+   const [username, setUserName] = useState();
+   const [password, setPassword] = useState();
+  
+
+   useEffect(()=>{
+      sessionStorage.clear();
+  },[]);
+
+  const handleSubmit = (e) => {
       e.preventDefault();
-      const response = await loginUser({
-         email,
-         password,
-      });
-      if (response.message === "Success") {
-         swal("Success", response.message, "success", {
-            buttons: false,
-            timer: 2000,
-         }).then((value) => {
-            localStorage.setItem("accessToken", response.responseData.accessToken);
-            localStorage.setItem("user", JSON.stringify(response.responseData.employee));
-            window.location.href = "/employelist";
-         });
-      } else {
-         swal("Failed", response.message, "error");
+      if (validate()) {
+          ///implentation
+          // console.log('proceed');
+          fetch("http://localhost:8000/employee/" + username).then((res) => {
+              return res.json();
+          }).then((resp) => {
+              console.log(Object.keys(resp).length)
+              if (Object.keys(resp).length === 0) {
+                  swal("Failed", "Please Enter valid username", "error");
+              } else {
+               // console.log(resp.password +"==="+ password);
+                  if (resp.password === password) {
+                      swal("Success", "Logged in successfully", "success");
+                     localStorage.setItem("accessToken", resp.type);
+                     localStorage.setItem("user", JSON.stringify(resp));
+                     window.location.href = "/employelist";
+                  }else{
+                      swal("Failed", "Please Enter valid credentials", "error");
+                  }
+              }
+          }).catch((err) => {
+              swal("Failed", "Login Failed ", "error");
+          });
       }
-   };
+  }
+
+  const validate = () => {
+      let result = true;
+      if (username === '' || username === null) {
+          result = false;
+          swal("Failed", "Please Enter Username", "error");
+      }
+      if (password === '' || password === null) {
+          result = false;
+          swal("Failed", "Please Enter Password", "error");
+      }
+      return result;
+  }
 
    return (
       <Grid container className={classes.root}>
